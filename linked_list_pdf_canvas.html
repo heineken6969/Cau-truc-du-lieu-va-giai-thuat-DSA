@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng Hợp Linked List - Flowchart, Code & Memory Tricks</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-page-break {
+                page-break-before: always !important;
+                break-before: page !important;
+            }
+            .pdf-container {
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <header class="no-print bg-slate-950 border-b border-slate-800 sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <i class="fa-solid fa-graduation-cap text-slate-950 text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-slate-100 tracking-tight flex items-center gap-2">
+                    Cấu Trúc Dữ Liệu & Giải Thuật 
+                    <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Giáo Trình Master</span>
+                </h1>
+                <p class="text-xs text-slate-400">Giáo sư Tương Tác & Sổ tay Ôn tập Siêu Tốc</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button onclick="toggleViewMode()" id="viewModeBtn" class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition border border-slate-700 text-sm font-medium">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Chế độ Giáo Trình (In PDF)</span>
+            </button>
+            <button onclick="window.print()" class="flex items-center space-x-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 transition text-slate-950 text-sm font-bold shadow-lg shadow-emerald-500/20">
+                <i class="fa-solid fa-print"></i>
+                <span>In / Xuất PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <nav id="sidebar" class="no-print w-80 bg-slate-950 border-r border-slate-800 overflow-y-auto p-4 flex flex-col space-y-6">
+            <div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-3">Chương I: Liên Kết Đơn</span>
+                <div class="space-y-1" id="nav-singly">
+                    <!-- Danh mục liên kết đơn nạp động -->
+                </div>
+            </div>
+            <div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-3">Chương II: Liên Kết Vòng</span>
+                <div class="space-y-1" id="nav-circular">
+                    <!-- Danh mục liên kết vòng nạp động -->
+                </div>
+            </div>
+            <div>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-3">Chương III: Liên Kết Kép</span>
+                <div class="space-y-1" id="nav-doubly">
+                    <!-- Danh mục liên kết kép nạp động -->
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-900 flex justify-center" id="main-content-area">
+            <div class="w-full max-w-4xl space-y-8 pdf-container" id="presentation-container">
+                <!-- Nội dung các trang học tập được render từ dữ liệu JS -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const database = [
+            // ==================== I. SINGLY LINKED LIST ====================
+            {
+                id: "singly-node",
+                category: "singly",
+                title: "I.1 Định nghĩa Node (Singly)",
+                objective: "Xây dựng nền tảng toa tàu một chiều lưu trữ giá trị và liên kết bước tiếp theo.",
+                code: `// Định nghĩa cấu trúc tự tham chiếu cho Node Đơn
+typedef struct Node {
+    int data;           // Ngăn chứa dữ liệu thực tế (Payload)
+    struct Node* next;  // Con trỏ lưu địa chỉ của Node tiếp theo
+} Node;`,
+                rules: "Tạo dữ liệu -> Chừa chỗ móc xích tiếp theo",
+                mindmap: "Node Đơn\n├── data: Giá trị thực\n└── next: Trỏ Node kế tiếp",
+                flashcard: {
+                    q: "Tại sao phải ghi 'struct Node* next' thay vì chỉ 'Node* next'?",
+                    a: "Vì tại thời điểm khai báo con trỏ, kiểu đóng gói 'Node' chưa được trình biên dịch biên dịch xong hoàn chỉnh."
+                },
+                mistake: "Quên ghi dấu ';' ở cuối dòng đóng ngoặc nhọn của struct Node.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Khai báo thành phần data (int)" },
+                    { type: "process", text: "Khai báo con trỏ struct Node* next" },
+                    { type: "end", text: "Hoàn thành cấu trúc" }
+                ]
+            },
+            {
+                id: "singly-create",
+                category: "singly",
+                title: "I.2 Tạo Node mới (Singly)",
+                objective: "Cấp phát động một Node mới trên Heap RAM và khóa an toàn liên kết.",
+                code: `Node* createNode(int val) {
+    // 1. Cấp phát động ô nhớ kích thước Node
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) return NULL; // Phòng hờ RAM đầy
+    
+    // 2. Điền dữ liệu và khóa liên kết hướng tiến
+    newNode->data = val;
+    newNode->next = NULL; // Tránh con trỏ hoang dã
+    
+    return newNode; // Trả về địa chỉ ô nhớ mới
+}`,
+                rules: "Cấp RAM -> Gán Data -> Khóa NULL đuôi",
+                mindmap: "Tạo Node mới\n├── Cấp RAM (malloc)\n├── Gán dữ liệu\n└── Đặt next = NULL",
+                flashcard: {
+                    q: "Nếu không gán newNode->next = NULL thì có sao không?",
+                    a: "Có. Nó sẽ giữ địa chỉ rác ngẫu nhiên, dễ gây sập chương trình khi duyệt."
+                },
+                mistake: "Không kiểm tra điều kiện (newNode == NULL) dẫn đến lỗi Null Pointer Dereference khi RAM đầy.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Gọi malloc cấp phát Node" },
+                    { type: "decision", text: "RAM đầy (newNode == NULL)?" },
+                    { type: "process", text: "Gán data = val; next = NULL", branch: "No" },
+                    { type: "end", text: "Trả về newNode" },
+                    { type: "end", text: "Trả về NULL", branch: "Yes" }
+                ]
+            },
+            {
+                id: "singly-traverse",
+                category: "singly",
+                title: "I.3 Duyệt danh sách (Singly)",
+                objective: "Đi qua tuần tự toàn bộ danh sách để đọc payload mà không làm mất dấu mốc head.",
+                code: `void printList(Node* head) {
+    Node* tmp = head; // Sử dụng con trỏ phụ để di chuyển
+    
+    while (tmp != NULL) { // Duyệt đến khi chạm điểm rỗng
+        printf("%d -> ", tmp->data); // Xử lý dữ liệu tại Node
+        tmp = tmp->next; // Nhảy tịnh tiến sang Node kế sau
+    }
+    printf("NULL\\n");
+}`,
+                rules: "Đặt tạm tại Head -> Lặp khi khác NULL -> Nhảy bằng next",
+                mindmap: "Duyệt danh sách\n├── Dùng biến chạy phụ tmp\n├── Điều kiện: tmp != NULL\n└── Tiến hành nhảy tmp = tmp->next",
+                flashcard: {
+                    q: "Tại sao không dùng trực tiếp biến 'head' để duyệt?",
+                    a: "Nếu dùng head để duyệt, biến head sẽ nhảy về cuối cùng, danh sách sẽ bị mất dấu đầu vĩnh viễn."
+                },
+                mistake: "Sử dụng nhầm điều kiện dừng là tmp->next != NULL, làm sót mất phần tử cuối cùng chưa in.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Đặt con trỏ tạm tmp = head" },
+                    { type: "decision", text: "tmp != NULL?" },
+                    { type: "process", text: "In data; Gán tmp = tmp->next", branch: "Yes" },
+                    { type: "end", text: "Kết thúc", branch: "No" }
+                ]
+            },
+            {
+                id: "singly-add-head",
+                category: "singly",
+                title: "I.4 Thêm phần tử vào đầu (Singly)",
+                objective: "Chèn Node mới làm mốc khởi điểm mới của danh sách một chiều.",
+                code: `Node* addAtHead(Node* head, int val) {
+    Node* newNode = createNode(val); // Tạo Node mới độc lập
+    if (newNode == NULL) return head;
+    
+    newNode->next = head; // Móc đuôi Node mới vào đầu cũ
+    head = newNode;       // Chỉ định Node mới làm đầu mới
+    
+    return head; // Trả về mốc quản lý đầu mới
+}`,
+                rules: "Tạo -> Nối đuôi mới vào đầu cũ -> Chuyển head về mới",
+                mindmap: "Thêm đầu\n├── Tạo Node mới\n├── newNode->next = head\n└── head = newNode",
+                flashcard: {
+                    q: "Thứ tự liên kết có thể đảo ngược được không?",
+                    a: "Không. Nếu đổi head = newNode trước, bạn sẽ làm mất địa chỉ của toàn bộ danh sách cũ."
+                },
+                mistake: "Không gán lại giá trị trả về của hàm cho biến đầu danh sách bên ngoài hàm main.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tạo newNode từ createNode(val)" },
+                    { type: "process", text: "newNode->next = head" },
+                    { type: "process", text: "head = newNode" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "singly-add-tail",
+                category: "singly",
+                title: "I.5 Thêm phần tử vào cuối (Singly)",
+                objective: "Dò tìm điểm tận cùng của danh sách và nối thêm toa tàu mới.",
+                code: `Node* addAtTail(Node* head, int val) {
+    Node* newNode = createNode(val);
+    if (newNode == NULL) return head;
+    
+    if (head == NULL) return newNode; // Rỗng thì làm head luôn
+    
+    Node* tmp = head;
+    while (tmp->next != NULL) { // Dừng lại tại Node cuối cùng
+        tmp = tmp->next;
+    }
+    
+    tmp->next = newNode; // Móc đuôi cũ vào đầu mới
+    return head;
+}`,
+                rules: "Nếu trống làm head -> Lặp tìm nút có next bằng NULL -> Móc vào mới",
+                mindmap: "Thêm cuối\n├── Check rỗng -> Làm head\n├── Duyệt tìm tmp->next == NULL\n└── Gán tmp->next = newNode",
+                flashcard: {
+                    q: "Tại sao điều kiện lặp lại là tmp->next != NULL thay vì tmp != NULL?",
+                    a: "Vì ta cần dừng chân chính xác ngay tại Node cuối để có quyền thay đổi con trỏ next của nó."
+                },
+                mistake: "Quên kiểm tra danh sách rỗng (head == NULL) gây ra lỗi crash khi đọc thuộc tính head->next.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tạo newNode" },
+                    { type: "decision", text: "head == NULL?" },
+                    { type: "end", text: "Trả về newNode", branch: "Yes" },
+                    { type: "process", text: "Duyệt tìm tmp->next == NULL", branch: "No" },
+                    { type: "process", text: "tmp->next = newNode" },
+                    { type: "end", text: "Trả về head" }
+                ]
+            },
+            {
+                id: "singly-add-mid",
+                category: "singly",
+                title: "I.6 Thêm phần tử vào giữa (Singly)",
+                objective: "Chèn thêm Node mới vào phía sau một Node mốc mang dữ liệu flag.",
+                code: `Node* addAfter(Node* head, int flag, int val) {
+    Node* tmp = head;
+    while (tmp != NULL && tmp->data != flag) { // Tìm mốc flag
+        tmp = tmp->next;
+    }
+    
+    if (tmp != NULL) { // Tìm thấy mốc chèn
+        Node* newNode = createNode(val);
+        if (newNode == NULL) return head;
+        
+        newNode->next = tmp->next; // 1. Móc mới vào nút đứng sau mốc
+        tmp->next = newNode;       // 2. Chuyển mốc trỏ sang mới
+    }
+    return head;
+}`,
+                rules: "Duyệt tìm mốc flag -> Móc mới vào sau mốc -> Móc mốc sang mới",
+                mindmap: "Thêm sau mốc\n├── Quét tìm data == flag\n├── newNode->next = tmp->next\n└── tmp->next = newNode",
+                flashcard: {
+                    q: "Nếu mốc trùng nút cuối cùng của danh sách thì hàm có hoạt động đúng?",
+                    a: "Đúng. Lúc đó newNode->next sẽ nhận giá trị NULL của mốc cuối cũ, danh sách khép đuôi chính xác."
+                },
+                mistake: "Thay đổi mối nối tmp->next = newNode trước khi gán newNode->next, làm đứt toàn bộ liên lạc phía sau.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Quét tìm tmp->data == flag" },
+                    { type: "decision", text: "Tìm thấy mốc (tmp != NULL)?" },
+                    { type: "process", text: "Tạo newNode; newNode->next = tmp->next", branch: "Yes" },
+                    { type: "process", text: "tmp->next = newNode" },
+                    { type: "end", text: "Kết thúc" },
+                    { type: "end", text: "Thoát không chèn", branch: "No" }
+                ]
+            },
+            {
+                id: "singly-del-head",
+                category: "singly",
+                title: "I.7 Xóa phần tử ở đầu (Singly)",
+                objective: "Cắt bỏ phần tử xuất phát và thu hồi RAM sạch sẽ.",
+                code: `Node* deleteHead(Node* head) {
+    if (head == NULL) return NULL; // Trống không xóa
+    
+    Node* toDelete = head; // 1. Giữ địa chỉ đầu cũ
+    head = head->next;     // 2. Chuyển giao head sang nút kế
+    free(toDelete);        // 3. Giải phóng bộ nhớ động
+    
+    return head; // Trả về đầu mới
+}`,
+                rules: "Lưu địa chỉ cũ -> Đổi head sang kế -> Free mốc cũ",
+                mindmap: "Xóa đầu\n├── Lưu toDelete = head\n├── head = head->next\n└── free(toDelete)",
+                flashcard: {
+                    q: "Nếu bỏ quên lệnh free(toDelete) thì có hậu quả gì?",
+                    a: "Lỗi rò rỉ bộ nhớ (Memory Leak), vùng nhớ RAM cũ bị chiếm dụng mãi mãi dù không dùng."
+                },
+                mistake: "Gọi hàm free(head) trước rồi mới dịch chuyển head = head->next, gây lỗi đọc rác bộ nhớ chết.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "head == NULL?" },
+                    { type: "end", text: "Thoát ngay", branch: "Yes" },
+                    { type: "process", text: "toDelete = head; head = head->next", branch: "No" },
+                    { type: "process", text: "free(toDelete)" },
+                    { type: "end", text: "Trả về head mới" }
+                ]
+            },
+            {
+                id: "singly-del-tail",
+                category: "singly",
+                title: "I.8 Xóa phần tử ở cuối (Singly)",
+                objective: "Tìm nút áp chót để tháo móc xích cuối hàng hiệu quả.",
+                code: `Node* deleteTail(Node* head) {
+    if (head == NULL) return NULL;
+    if (head->next == NULL) { // Chỉ có 1 phần tử
+        free(head);
+        return NULL;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next->next != NULL) { // Tìm nút áp chót (kế cuối)
+        tmp = tmp->next;
+    }
+    
+    free(tmp->next); // Giải phóng nút đuôi cũ
+    tmp->next = NULL; // Biến nút áp chót thành nút cuối mới
+    return head;
+}`,
+                rules: "Duyệt tìm áp chót (tmp->next->next == NULL) -> Giải phóng đuôi -> Cài áp chót chỉ NULL",
+                mindmap: "Xóa cuối\n├── Check 0 hoặc 1 Node\n├── Lặp tìm tmp->next->next == NULL\n├── free(tmp->next)\n└── Đặt tmp->next = NULL",
+                flashcard: {
+                    q: "Nếu danh sách chỉ có 1 phần tử thì điều kiện tmp->next->next có sập không?",
+                    a: "Có. Do đó bắt buộc phải tách riêng điều kiện kiểm tra (head->next == NULL) trước khi chạy vòng lặp."
+                },
+                mistake: "Dùng điều kiện dừng tmp->next != NULL, tiến thẳng ra đuôi rồi giải phóng làm mất mốc nối áp chót.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "Mô tả danh sách?" },
+                    { type: "process", text: "Rỗng hoặc 1 Node: Giải phóng nếu có, trả NULL", branch: "<= 1 Node" },
+                    { type: "process", text: "Duyệt tìm tmp->next->next == NULL", branch: "> 1 Node" },
+                    { type: "process", text: "free(tmp->next); tmp->next = NULL" },
+                    { type: "end", text: "Hoàn tất" }
+                ]
+            },
+            {
+                id: "singly-del-mid",
+                category: "singly",
+                title: "I.9 Xóa phần tử ở giữa (Singly)",
+                objective: "Tìm nút mốc và giải phóng phần tử đứng liền kề phía sau nó.",
+                code: `Node* deleteAfter(Node* head, int flag) {
+    Node* tmp = head;
+    while (tmp != NULL && tmp->data != flag) {
+        tmp = tmp->next;
+    }
+    
+    if (tmp != NULL && tmp->next != NULL) { // Tồn tại nút sau mốc
+        Node* toDelete = tmp->next; // Lưu địa chỉ nút cần xóa
+        tmp->next = toDelete->next; // Bắc cầu nối bỏ qua nút xóa
+        free(toDelete); // Giải phóng RAM sạch sẽ
+    }
+    return head;
+}`,
+                rules: "Tìm mốc flag -> Bắc cầu vượt mốc xóa (tmp->next = toDelete->next) -> Giải phóng",
+                mindmap: "Xóa sau mốc\n├── Tìm mốc chứa flag\n├── Lưu toDelete = tmp->next\n├── tmp->next = toDelete->next\n└── free(toDelete)",
+                flashcard: {
+                    q: "Có thể trực tiếp xóa nút mang giá trị flag trên danh sách liên kết một chiều được không?",
+                    a: "Khó hơn rất nhiều, vì cấu trúc một chiều không cho phép ta quay ngược lùi lại nút đứng trước nút flag."
+                },
+                mistake: "Không kiểm tra điều kiện tmp->next != NULL, dẫn đến lỗi đọc bộ nhớ chết khi mốc nằm ở đuôi.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Quét tìm mốc flag" },
+                    { type: "decision", text: "Có nút phía sau (tmp->next != NULL)?" },
+                    { type: "process", text: "toDelete = tmp->next; tmp->next = toDelete->next", branch: "Yes" },
+                    { type: "process", text: "free(toDelete)" },
+                    { type: "end", text: "Kết thúc" },
+                    { type: "end", text: "Không xóa", branch: "No" }
+                ]
+            },
+
+            // ==================== II. CIRCULAR LINKED LIST ====================
+            {
+                id: "circular-node",
+                category: "circular",
+                title: "II.1 Định nghĩa (Circular)",
+                objective: "Sử dụng lại cấu trúc Node một chiều nhưng thay đổi tư duy quản lý điểm đuôi.",
+                code: `// Cấu trúc tương tự Node đơn nhưng logic khép vòng tuần hoàn
+typedef struct Node {
+    int data;
+    struct Node* next; // Sẽ trỏ ngược lại về head thay vì NULL ở cuối
+} Node;`,
+                rules: "Cấu trúc giống đơn -> Liên kết nối đầu đuôi",
+                mindmap: "Node Vòng\n├── data: Payload giá trị\n└── next: Trỏ khép vòng về head",
+                flashcard: {
+                    q: "Điểm nhận diện một Node là nút đuôi của danh sách vòng?",
+                    a: "Nút đuôi thỏa mãn điều kiện: tmp->next == head."
+                },
+                mistake: "Cố tình tạo kiểu dữ liệu khác biệt không cần thiết khi bản chất chỉ cần đổi cách móc con trỏ.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Khai báo dữ liệu payload" },
+                    { type: "process", text: "Khai báo móc nối next" },
+                    { type: "end", text: "Hoàn tất" }
+                ]
+            },
+            {
+                id: "circular-create",
+                category: "circular",
+                title: "II.2 Tạo Node (Circular)",
+                objective: "Khởi tạo ô nhớ đơn lập cho danh sách vòng khép kín.",
+                code: `Node* createCircularNode(int val) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) return NULL;
+    
+    newNode->data = val;
+    newNode->next = NULL; // Sẽ được khép vòng khi thêm vào danh sách
+    
+    return newNode;
+}`,
+                rules: "Đúc gạch vòng -> Cấp RAM -> Đặt data -> Khóa tạm NULL",
+                mindmap: "Tạo Node vòng\n├── Cấp RAM\n└── Khởi tạo dữ liệu cơ bản",
+                flashcard: {
+                    q: "Tại sao không cho newNode->next = newNode ngay trong hàm tạo?",
+                    a: "Chỉ khi Node này đại diện cho danh sách vòng rỗng ban đầu thì mới tự nối chính nó."
+                },
+                mistake: "Quên cấp phát bằng bộ nhớ malloc mà gán địa chỉ tĩnh làm mất liên kết khi thoát hàm.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "malloc cấp phát" },
+                    { type: "process", text: "newNode->data = val; next = NULL" },
+                    { type: "end", text: "Trả về địa chỉ" }
+                ]
+            },
+            {
+                id: "circular-traverse",
+                category: "circular",
+                title: "II.3 Duyệt danh sách (Circular)",
+                objective: "Duyệt qua đúng 1 chu kỳ tuần hoàn khép kín mà không bị rơi vào vòng lặp vô tận.",
+                code: `void printCircular(Node* head) {
+    if (head == NULL) return;
+    
+    Node* tmp = head;
+    do {
+        printf("%d -> ", tmp->data);
+        tmp = tmp->next; // Di chuyển tiếp
+    } while (tmp != head); // Dừng lại khi quay về vạch xuất phát
+    
+    printf("(head)\\n");
+}`,
+                rules: "Dùng do-while -> Di chuyển trước -> So sánh trùng head sau",
+                mindmap: "Duyệt vòng\n├── Điểm mốc tmp = head\n├── Lặp do-while\n└── Điều kiện lặp: tmp != head",
+                flashcard: {
+                    q: "Tại sao phải dùng do-while thay vì while thông thường?",
+                    a: "Vì nếu dùng while (tmp != head) ngay từ đầu, điều kiện sẽ sai ngay lập tức do ban đầu tmp được gán bằng head."
+                },
+                mistake: "Sử dụng while (tmp != NULL) trong danh sách vòng gây ra lỗi tràn màn hình do lặp vô tận.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "Danh sách rỗng?" },
+                    { type: "process", text: "Đặt tmp = head; Lặp do: In; tmp=tmp->next", branch: "No" },
+                    { type: "decision", text: "tmp == head?" },
+                    { type: "end", text: "Kết thúc", branch: "Yes" },
+                    { type: "end", text: "Thoát ngay", branch: "Yes" }
+                ]
+            },
+            {
+                id: "circular-add-head",
+                category: "circular",
+                title: "II.4 Thêm phần tử vào đầu (Circular)",
+                objective: "Đặt Node mới lên đầu hàng và bắt nút đuôi cũ chuyển kết nối quay đầu về mới.",
+                code: `Node* addAtHeadCircular(Node* head, int val) {
+    Node* newNode = createCircularNode(val);
+    if (newNode == NULL) return head;
+    
+    if (head == NULL) {
+        newNode->next = newNode; // Tự khép vòng cô đơn
+        return newNode;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next != head) { // Tìm nút đuôi đang trỏ về head cũ
+        tmp = tmp->next;
+    }
+    
+    newNode->next = head; // 1. Móc mới vào đầu cũ
+    tmp->next = newNode;  // 2. Ép đuôi nối về đầu mới
+    head = newNode;       // 3. Đổi mốc head
+    
+    return head;
+}`,
+                rules: "Rỗng tự nối mình -> Tìm đuôi cũ -> Móc mới vô head -> Đuôi mọc vô mới -> Đổi mốc head",
+                mindmap: "Thêm đầu vòng\n├── Check rỗng -> tự nối\n├── Tìm đuôi (tmp->next == head)\n├── newNode->next = head\n└── tmp->next = newNode; head = newNode",
+                flashcard: {
+                    q: "Độ phức tạp thời gian khi thêm đầu trong danh sách vòng đơn giản?",
+                    a: "O(N) vì bắt buộc phải duyệt tìm nút cuối cùng để đổi liên kết next của nó."
+                },
+                mistake: "Quên cập nhật mối nối của nút đuôi, khiến nút cuối vẫn trỏ về địa chỉ head cũ đã mất.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "head == NULL?" },
+                    { type: "process", text: "Tự nối: newNode->next = newNode", branch: "Yes" },
+                    { type: "process", text: "Tìm đuôi tmp->next == head", branch: "No" },
+                    { type: "process", text: "newNode->next = head; tmp->next = newNode; head = newNode" },
+                    { type: "end", text: "Trả về head mới" }
+                ]
+            },
+            {
+                id: "circular-add-tail",
+                category: "circular",
+                title: "II.5 Thêm phần tử vào cuối (Circular)",
+                objective: "Chèn thêm phần tử vào đuôi vòng mà không thay đổi vị trí chỉ mục head.",
+                code: `Node* addAtTailCircular(Node* head, int val) {
+    Node* newNode = createCircularNode(val);
+    if (newNode == NULL) return head;
+    
+    if (head == NULL) {
+        newNode->next = newNode;
+        return newNode;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next != head) { // Duyệt tìm đuôi cũ
+        tmp = tmp->next;
+    }
+    
+    newNode->next = head; // 1. Móc mới quay về head
+    tmp->next = newNode;  // 2. Đuôi cũ nối vào mới
+    
+    return head; // Giữ nguyên vị trí mốc head
+}`,
+                rules: "Giống hệt thêm đầu -> Chỉ khác là KHÔNG thay đổi con trỏ quản lý head",
+                mindmap: "Thêm cuối vòng\n├── Khởi tạo kết nối giống chèn đầu\n└── Không cập nhật biến head",
+                flashcard: {
+                    q: "Sự khác biệt duy nhất giữa thêm đầu và thêm cuối của danh sách vòng là gì?",
+                    a: "Thao tác gán head = newNode. Thêm cuối giữ nguyên head cũ."
+                },
+                mistake: "Quên móc đuôi của newNode về head, để mặc định NULL làm đứt gãy tính chất khép vòng.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tìm đuôi tmp" },
+                    { type: "process", text: "newNode->next = head; tmp->next = newNode" },
+                    { type: "end", text: "Trả về head cũ" }
+                ]
+            },
+            {
+                id: "circular-add-mid",
+                category: "circular",
+                title: "II.6 Thêm phần tử vào giữa (Circular)",
+                objective: "Chèn Node mới sau một Node flag trong vòng tuần hoàn.",
+                code: `Node* addAfterCircular(Node* head, int flag, int val) {
+    if (head == NULL) return NULL;
+    
+    Node* tmp = head;
+    // Tìm mốc flag có giới hạn chu kỳ tuần hoàn
+    while (tmp->next != head && tmp->data != flag) {
+        tmp = tmp->next;
+    }
+    
+    if (tmp->data == flag) { // Tìm thấy mốc chèn
+        Node* newNode = createCircularNode(val);
+        if (newNode == NULL) return head;
+        
+        newNode->next = tmp->next; // 1. Móc mới vô sau mốc
+        tmp->next = newNode;       // 2. Chuyển mốc nối sang mới
+    }
+    return head;
+}`,
+                rules: "Quét tìm mốc giới hạn chu kỳ -> Móc chéo liên kết tương tự danh sách đơn",
+                mindmap: "Thêm giữa vòng\n├── Tìm mốc có giới hạn vòng\n└── Chèn chéo giống đơn",
+                flashcard: {
+                    q: "Nếu mốc flag nằm ở cuối danh sách vòng, hàm này có chạy đúng?",
+                    a: "Đúng. Lúc đó newNode->next tự động nhận lại địa chỉ head cũ, khép đuôi chuẩn xác."
+                },
+                mistake: "Thiếu điều kiện giới hạn vòng tmp->next != head làm treo CPU nếu không tìm thấy flag.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Duyệt tìm flag với chặn tmp->next != head" },
+                    { type: "decision", text: "Tìm thấy flag?" },
+                    { type: "process", text: "newNode->next = tmp->next; tmp->next = newNode", branch: "Yes" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "circular-del-head",
+                category: "circular",
+                title: "II.7 Xóa phần tử ở đầu (Circular)",
+                objective: "Loại bỏ mốc xuất phát và tái lập điểm quay đầu cho nút đuôi.",
+                code: `Node* deleteHeadCircular(Node* head) {
+    if (head == NULL) return NULL;
+    if (head->next == head) { // Chỉ có 1 Node tự khép vòng
+        free(head);
+        return NULL;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next != head) { // Tìm đuôi để cập nhật quay đầu mới
+        tmp = tmp->next;
+    }
+    
+    Node* toDelete = head;
+    tmp->next = head->next; // 1. Đuôi trỏ sang phần tử thứ hai
+    head = head->next;      // 2. Chuyển đầu sang phần tử thứ hai
+    free(toDelete);         // 3. Giải phóng đầu cũ
+    
+    return head;
+}`,
+                rules: "1 Node xóa trả NULL -> Tìm đuôi -> Đuôi móc vào Node thứ 2 -> Đổi head sang Node thứ 2 -> Free",
+                mindmap: "Xóa đầu vòng\n├── Tìm đuôi vòng\n├── Đuôi móc vượt cấp sang head->next\n├── head = head->next\n└── free đầu cũ",
+                flashcard: {
+                    q: "Tại sao xóa đầu danh sách vòng lại có độ phức tạp O(N)?",
+                    a: "Vì ta phải đi tìm nút cuối cùng để chỉnh lại thuộc tính next của nó hướng về đầu mới."
+                },
+                mistake: "Quên giải phóng toDelete gây rò rỉ bộ nhớ hoặc quên kiểm tra trường hợp 1 Node đơn lẻ.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "Chỉ có 1 Node?" },
+                    { type: "process", text: "free(head); return NULL", branch: "Yes" },
+                    { type: "process", text: "Tìm đuôi tmp; toDelete = head; tmp->next = head->next; head = head->next", branch: "No" },
+                    { type: "process", text: "free(toDelete)" },
+                    { type: "end", text: "Trả về head mới" }
+                ]
+            },
+            {
+                id: "circular-del-tail",
+                category: "circular",
+                title: "II.8 Xóa phần tử ở cuối (Circular)",
+                objective: "Tìm nút áp chót để tháo liên kết quay đầu khỏi phần tử đuôi cũ.",
+                code: `Node* deleteTailCircular(Node* head) {
+    if (head == NULL) return NULL;
+    if (head->next == head) {
+        free(head);
+        return NULL;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next->next != head) { // Dừng lại tại nút áp chót (kề cuối)
+        tmp = tmp->next;
+    }
+    
+    Node* toDelete = tmp->next; // Giữ đuôi cũ để xóa
+    tmp->next = head; // Ép nút áp chót khép vòng trực tiếp về head
+    free(toDelete);
+    
+    return head;
+}`,
+                rules: "Tìm áp chót (tmp->next->next == head) -> Cho áp chót nối thẳng về head -> Free đuôi cũ",
+                mindmap: "Xóa cuối vòng\n├── Tìm áp chót\n├── tmp->next = head\n└── free(toDelete)",
+                flashcard: {
+                    q: "Làm thế nào để nhận diện nút áp chót trong danh sách vòng?",
+                    a: "Thỏa mãn điều kiện thấu thị hai cấp: tmp->next->next == head."
+                },
+                mistake: "Sử dụng nhầm điều kiện dừng tmp->next != head dẫn đến tiến thẳng ra đuôi và xóa mất mốc áp chót.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Duyệt tìm tmp->next->next == head" },
+                    { type: "process", text: "toDelete = tmp->next; tmp->next = head" },
+                    { type: "process", text: "free(toDelete)" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "circular-del-mid",
+                category: "circular",
+                title: "II.9 Xóa phần tử ở giữa (Circular)",
+                objective: "Xóa bỏ an toàn phần tử đứng ngay phía sau nút flag trong chu trình vòng.",
+                code: `Node* deleteAfterCircular(Node* head, int flag) {
+    if (head == NULL) return NULL;
+    
+    Node* tmp = head;
+    while (tmp->next != head && tmp->data != flag) {
+        tmp = tmp->next;
+    }
+    
+    if (tmp->data == flag) {
+        Node* toDelete = tmp->next;
+        if (toDelete == head) { // Trường hợp đặc biệt xóa trúng mốc đầu head
+            head = head->next;
+        }
+        tmp->next = toDelete->next; // Bắc cầu nối bỏ qua nút xóa
+        free(toDelete);
+    }
+    return head;
+}`,
+                rules: "Tìm mốc flag -> Đánh dấu nút sau -> Nếu xóa trúng đầu thì dịch chuyển head -> Bắc cầu -> Free",
+                mindmap: "Xóa sau mốc vòng\n├── Tìm mốc flag có giới hạn chu kỳ\n├── Đánh dấu toDelete = tmp->next\n├── Dịch head nếu toDelete == head\n└── tmp->next = toDelete->next; free(toDelete)",
+                flashcard: {
+                    q: "Tại sao phải dịch chuyển head nếu phát hiện toDelete == head?",
+                    a: "Vì nếu không dịch chuyển, sau khi gọi free(toDelete), con trỏ head toàn cục sẽ trỏ vào vùng nhớ chết (Dangling Pointer)."
+                },
+                mistake: "Không xử lý trường hợp đặc biệt xóa trúng nút head làm hư hại hoàn toàn cấu trúc chỉ mục.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Duyệt tìm mốc flag" },
+                    { type: "decision", text: "Nút xóa (toDelete = tmp->next) là head?" },
+                    { type: "process", text: "Dịch chuyển head = head->next", branch: "Yes" },
+                    { type: "process", text: "tmp->next = toDelete->next; free(toDelete)", branch: "No" },
+                    { type: "end", text: "Hoàn tất" }
+                ]
+            },
+
+            // ==================== III. DOUBLY LINKED LIST ====================
+            {
+                id: "doubly-node",
+                category: "doubly",
+                title: "III.1 Định nghĩa (Doubly)",
+                objective: "Thiết lập cấu trúc mạng lưới liên kết hai chiều tiến - lùi cực kỳ linh hoạt.",
+                code: `// Cấu trúc Node Kép lưu trữ hai con trỏ liên kết định hướng
+typedef struct Node {
+    int data;
+    struct Node* next; // Con trỏ định hướng liên kết phía sau
+    struct Node* prev; // Con trỏ định hướng liên kết ngược phía trước
+} Node;`,
+                rules: "Chứa data -> Bổ sung hướng tiến (next) -> Bổ sung hướng lùi (prev)",
+                mindmap: "Node Kép\n├── data: payload\n├── next: Trỏ tiến\n└── prev: Trỏ lùi",
+                flashcard: {
+                    q: "Lợi ích lớn nhất của việc bổ sung thêm con trỏ prev là gì?",
+                    a: "Cho phép duyệt ngược từ cuối danh sách lên và thực hiện xóa các phần tử tại chỗ cực kỳ nhanh chóng O(1)."
+                },
+                mistake: "Quên khai báo cấu trúc tự tham chiếu struct Node* prev làm mất tính chất hai chiều.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Khai báo payload (data)" },
+                    { type: "process", text: "Khai báo con trỏ hướng tiến next" },
+                    { type: "process", text: "Khai báo con trỏ hướng lùi prev" },
+                    { type: "end", text: "Hoàn thành" }
+                ]
+            },
+            {
+                id: "doubly-create",
+                category: "doubly",
+                title: "III.2 Tạo Node (Doubly)",
+                objective: "Khởi tạo ô nhớ hai chiều cô lập độc lập.",
+                code: `Node* createDoublyNode(int val) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) return NULL;
+    
+    newNode->data = val;
+    newNode->next = NULL; // Khóa tiến an toàn
+    newNode->prev = NULL; // Khóa lùi an toàn
+    
+    return newNode;
+}`,
+                rules: "Cấp RAM -> Gán data -> Khóa NULL cả hai hướng đi",
+                mindmap: "Tạo Node kép\n├── Cấp phát bộ nhớ\n└── Gán cả next và prev bằng NULL",
+                flashcard: {
+                    q: "Nếu quên gán prev = NULL, con trỏ sẽ trỏ đi đâu?",
+                    a: "Trỏ vào vùng rác ngẫu nhiên, vô cùng nguy hiểm khi duyệt ngược."
+                },
+                mistake: "Chỉ gán newNode->next = NULL mà quên mất thuộc tính cực kỳ quan trọng newNode->prev = NULL.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Gọi malloc cấp phát" },
+                    { type: "process", text: "newNode->data = val; next = NULL; prev = NULL" },
+                    { type: "end", text: "Trả về newNode" }
+                ]
+            },
+            {
+                id: "doubly-traverse",
+                category: "doubly",
+                title: "III.3 Duyệt danh sách (Doubly)",
+                objective: "Thực hiện duyệt xuôi hoặc duyệt ngược dễ dàng trên cấu trúc hai chiều.",
+                code: `void printDoublyList(Node* head) {
+    Node* tmp = head;
+    printf("Duyệt xuôi: ");
+    while (tmp != NULL) {
+        printf("%d <=> ", tmp->data);
+        if (tmp->next == NULL) break; // Giữ lại Node cuối để duyệt ngược thử
+        tmp = tmp->next;
+    }
+    printf("NULL\\n");
+    
+    // Thử nghiệm sức mạnh duyệt ngược của Node Kép
+    printf("Duyệt ngược: ");
+    while (tmp != NULL) {
+        printf("%d <=> ", tmp->data);
+        tmp = tmp->prev; // Nhảy ngược lùi lại phía trước
+    }
+    printf("NULL\\n");
+}`,
+                rules: "Duyệt tiến bằng next -> Duyệt ngược bằng prev",
+                mindmap: "Duyệt kép\n├── Chiều xuôi: tmp = tmp->next\n└── Chiều ngược: tmp = tmp->prev",
+                flashcard: {
+                    q: "Danh sách kép có hỗ trợ duyệt một phần bất kỳ không cần mốc head?",
+                    a: "Có. Từ bất kỳ vị trí Node nào, bạn có thể quét sạch sang cả hai phía trái và phải."
+                },
+                mistake: "Sử dụng sai hướng nhảy (nhầm lẫn giữa tmp = tmp->next và tmp = tmp->prev) gây lặp vô hạn.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Duyệt xuôi tmp = tmp->next" },
+                    { type: "process", text: "In dữ liệu dòng tịnh tiến" },
+                    { type: "process", text: "Duyệt ngược tmp = tmp->prev" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "doubly-add-head",
+                category: "doubly",
+                title: "III.4 Thêm đầu (Doubly)",
+                objective: "Chèn phần tử mới vào đầu danh sách kép và thiết lập liên kết ngược đối xứng.",
+                code: `Node* addAtHeadDoubly(Node* head, int val) {
+    Node* newNode = createDoublyNode(val);
+    if (newNode == NULL) return head;
+    
+    newNode->next = head; // 1. Móc tiến của mới vào đầu cũ
+    newNode->prev = NULL; // 2. Khóa lùi của mới
+    
+    if (head != NULL) {
+        head->prev = newNode; // 3. Đồng bộ móc lùi đầu cũ ngược về mới
+    }
+    
+    head = newNode; // 4. Cập nhật mốc head quản lý mới
+    return head;
+}`,
+                rules: "Nối tiến mới vào head -> Khóa lùi mới -> Nếu head cũ tồn tại, móc ngược về mới -> Đổi mốc head",
+                mindmap: "Thêm đầu kép\n├── newNode->next = head\n├── head->prev = newNode (nếu có)\n└── head = newNode",
+                flashcard: {
+                    q: "Tại sao phải có điều kiện (head != NULL) khi chỉnh móc lùi đầu cũ?",
+                    a: "Vì nếu danh sách ban đầu đang rỗng, head bằng NULL thì thuộc tính head->prev không tồn tại để thao tác."
+                },
+                mistake: "Quên không cập nhật head->prev = newNode làm gãy liên kết ngược khi chạy chương trình.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tạo newNode kép" },
+                    { type: "process", text: "newNode->next = head; newNode->prev = NULL" },
+                    { type: "decision", text: "Danh sách ban đầu rỗng (head == NULL)?" },
+                    { type: "process", text: "head->prev = newNode", branch: "No" },
+                    { type: "process", text: "head = newNode" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "doubly-add-tail",
+                category: "doubly",
+                title: "III.5 Thêm cuối (Doubly)",
+                objective: "Nối thêm toa tàu hai chiều vào tận cùng của danh sách.",
+                code: `Node* addAtTailDoubly(Node* head, int val) {
+    Node* newNode = createDoublyNode(val);
+    if (newNode == NULL) return head;
+    
+    if (head == NULL) return newNode;
+    
+    Node* tmp = head;
+    while (tmp->next != NULL) {
+        tmp = tmp->next;
+    }
+    
+    tmp->next = newNode;  // 1. Móc tiến của đuôi cũ vào mới
+    newNode->prev = tmp;  // 2. Móc lùi của mới về đuôi cũ
+    
+    return head;
+}`,
+                rules: "Rỗng làm head -> Lặp tìm đuôi -> Nối đuôi cũ tiến vào mới -> Nối mới lùi về đuôi cũ",
+                mindmap: "Thêm cuối kép\n├── Tìm đuôi tmp->next == NULL\n├── tmp->next = newNode\n└── newNode->prev = tmp",
+                flashcard: {
+                    q: "Thao tác chèn cuối danh sách kép có nhanh hơn danh sách đơn?",
+                    a: "Vẫn là O(N) nếu chỉ có mốc quản lý head. Sẽ cực nhanh O(1) nếu ta trang bị thêm con trỏ mốc tail quản lý đuôi."
+                },
+                mistake: "Quên không móc liên kết ngược newNode->prev = tmp khiến Node mới bị cô lập một chiều lùi.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tìm đuôi tmp" },
+                    { type: "process", text: "tmp->next = newNode; newNode->prev = tmp" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "doubly-add-mid",
+                category: "doubly",
+                title: "III.6 Thêm giữa (Doubly)",
+                objective: "Chèn Node mới sau mốc flag với ma trận liên kết 4 mối nối hoàn hảo.",
+                code: `Node* addAfterDoubly(Node* head, int flag, int val) {
+    Node* tmp = head;
+    while (tmp != NULL && tmp->data != flag) {
+        tmp = tmp->next;
+    }
+    
+    if (tmp != NULL) {
+        Node* newNode = createDoublyNode(val);
+        if (newNode == NULL) return head;
+        
+        newNode->next = tmp->next; // 1. Tiến của mới móc vào sau mốc
+        newNode->prev = tmp;       // 2. Lùi của mới móc về mốc
+        
+        if (tmp->next != NULL) {
+            tmp->next->prev = newNode; // 3. Lùi của nút sau móc ngược về mới
+        }
+        tmp->next = newNode; // 4. Tiến của mốc móc vào mới
+    }
+    return head;
+}`,
+                rules: "Nối hướng đi từ mới ra trước (tiến/lùi) -> Nối ngược từ nút sau về mới -> Đổi tiến của mốc",
+                mindmap: "Chèn kép giữa (4 bước)\n├── 1. newNode->next = tmp->next\n├── 2. newNode->prev = tmp\n├── 3. tmp->next->prev = newNode\n└── 4. tmp->next = newNode",
+                flashcard: {
+                    q: "Tại sao bước 4 (tmp->next = newNode) phải thực hiện cuối cùng?",
+                    a: "Vì nếu thực hiện sớm hơn, bạn sẽ làm mất hoàn toàn địa chỉ của nút đứng phía sau mốc cũ."
+                },
+                mistake: "Thực hiện sai thứ tự ma trận 4 liên kết dẫn đến mất dấu vết hoặc liên kết bị nối lặp chéo.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Duyệt tìm mốc flag" },
+                    { type: "process", text: "newNode->next = tmp->next; newNode->prev = tmp" },
+                    { type: "decision", text: "Có nút phía sau (tmp->next != NULL)?" },
+                    { type: "process", text: "tmp->next->prev = newNode", branch: "Yes" },
+                    { type: "process", text: "tmp->next = newNode" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "doubly-del-head",
+                category: "doubly",
+                title: "III.7 Xóa đầu (Doubly)",
+                objective: "Hủy bỏ Node đầu hàng và triệt tiêu dấu vết lùi của Node đầu mới.",
+                code: `Node* deleteHeadDoubly(Node* head) {
+    if (head == NULL) return NULL;
+    if (head->next == NULL) { // 1 Node duy nhất
+        free(head);
+        return NULL;
+    }
+    
+    Node* toDelete = head;
+    head = head->next; // 1. Dịch chuyển head sang nút kế
+    head->prev = NULL; // 2. Triệt tiêu liên kết lùi đầu mới
+    free(toDelete);    // 3. Giải phóng đầu cũ
+    
+    return head;
+}`,
+                rules: "Dịch chuyển mốc head -> Triệt tiêu prev của head mới đặt NULL -> Free đầu cũ",
+                mindmap: "Xóa đầu kép\n├── head = head->next\n├── head->prev = NULL\n└── free(toDelete)",
+                flashcard: {
+                    q: "Tại sao phải đặt head->prev = NULL?",
+                    a: "Vì head mới hiện tại đang là mốc bắt đầu danh sách, hướng lùi của nó bắt buộc phải là rỗng."
+                },
+                mistake: "Quên không xử lý trường hợp danh sách chỉ có 1 Node làm lỗi crash khi gọi lệnh head->prev = NULL.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "decision", text: "Số lượng Node?" },
+                    { type: "process", text: "Duyệt toDelete=head; head=head->next; head->prev=NULL; free(toDelete)", branch: "> 1 Node" },
+                    { type: "process", text: "Xóa trực tiếp, trả về NULL", branch: "<= 1 Node" },
+                    { type: "end", text: "Hoàn tất" }
+                ]
+            },
+            {
+                id: "doubly-del-tail",
+                category: "doubly",
+                title: "III.8 Xóa cuối (Doubly)",
+                objective: "Hủy bỏ phần tử đuôi bằng cơ chế truy lùi áp chót tốc độ cao.",
+                code: `Node* deleteTailDoubly(Node* head) {
+    if (head == NULL) return NULL;
+    if (head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+    
+    Node* tmp = head;
+    while (tmp->next != NULL) { // Duyệt thẳng tiến ra nút cuối cùng
+        tmp = tmp->next;
+    }
+    
+    tmp->prev->next = NULL; // Ép mốc áp chót ngắt móc tiến
+    free(tmp); // Giải phóng nút đuôi cũ trực tiếp
+    
+    return head;
+}`,
+                rules: "Quét thẳng tiến ra nút đuôi -> Ép nút áp chót qua prev ngắt liên kết tiến đặt NULL -> Free đuôi",
+                mindmap: "Xóa cuối kép\n├── Tiến thẳng ra đuôi tmp\n├── tmp->prev->next = NULL\n└── free(tmp)",
+                flashcard: {
+                    q: "Tại sao không cần vòng lặp kiểm tra thấu thị tmp->next->next để tìm áp chót như danh sách đơn?",
+                    a: "Vì thuộc tính hai chiều cho phép từ nút cuối cùng tmp ta chỉ cần lùi ngược 1 bước bằng tmp->prev để định vị áp chót cực dễ."
+                },
+                mistake: "Quên kiểm tra danh sách có 1 phần tử duy nhất gây ra lỗi truy cập địa chỉ rỗng của tmp->prev.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tìm đuôi tmp" },
+                    { type: "process", text: "tmp->prev->next = NULL" },
+                    { type: "process", text: "free(tmp)" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            },
+            {
+                id: "doubly-del-mid",
+                category: "doubly",
+                title: "III.9 Xóa giữa (Doubly)",
+                objective: "Loại bỏ nút đứng sau mốc flag đồng thời tái kết nối lùi đối xứng mượt mà.",
+                code: `Node* deleteAfterDoubly(Node* head, int flag) {
+    Node* tmp = head;
+    while (tmp != NULL && tmp->data != flag) {
+        tmp = tmp->next;
+    }
+    
+    if (tmp != NULL && tmp->next != NULL) {
+        Node* toDelete = tmp->next; // Nút mục tiêu cần xóa
+        
+        tmp->next = toDelete->next; // 1. Cho mốc nối tiến vượt mặt xóa
+        if (toDelete->next != NULL) {
+            toDelete->next->prev = tmp; // 2. Cho nút sau quay đầu móc ngược về mốc
+        }
+        
+        free(toDelete); // 3. Giải phóng ô nhớ
+    }
+    return head;
+}`,
+                rules: "Bắc cầu tiến qua nút xóa -> Móc ngược nút sau về mốc cũ -> Free mục tiêu",
+                mindmap: "Xóa sau mốc kép\n├── toDelete = tmp->next\n├── tmp->next = toDelete->next\n├── toDelete->next->prev = tmp (nếu có)\n└── free(toDelete)",
+                flashcard: {
+                    q: "Nếu toDelete là phần tử cuối cùng của danh sách thì điều kiện (toDelete->next != NULL) xử lý thế nào?",
+                    a: "Bỏ qua việc chỉnh liên kết ngược, mốc áp chót tmp->next nhận NULL hoàn hảo."
+                },
+                mistake: "Quên không cập nhật mối nối lùi prev của nút sau làm đứt gãy tính liên kết hai chiều đối xứng.",
+                flowchart: [
+                    { type: "start", text: "Bắt đầu" },
+                    { type: "process", text: "Tìm mốc flag" },
+                    { type: "process", text: "toDelete = tmp->next; tmp->next = toDelete->next" },
+                    { type: "decision", text: "Phía sau toDelete có phần tử (toDelete->next != NULL)?" },
+                    { type: "process", text: "toDelete->next->prev = tmp", branch: "Yes" },
+                    { type: "process", text: "free(toDelete)" },
+                    { type: "end", text: "Kết thúc" }
+                ]
+            }
+        ];
+
+        function initApp() {
+            const singlyNav = document.getElementById('nav-singly');
+            const circularNav = document.getElementById('nav-circular');
+            const doublyNav = document.getElementById('nav-doubly');
+
+            singlyNav.innerHTML = '';
+            circularNav.innerHTML = '';
+            doublyNav.innerHTML = '';
+
+            database.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-3 py-2 rounded text-xs font-medium hover:bg-slate-800 hover:text-slate-200 transition duration-150 flex items-center space-x-2 text-slate-400";
+                btn.onclick = () => scrollToSection(item.id);
+                btn.innerHTML = `
+                    <i class="fa-regular fa-file-code text-slate-500"></i>
+                    <span class="truncate">${item.title.split(' ')[1] ? item.title.substring(item.title.indexOf(' ') + 1) : item.title}</span>
+                `;
+
+                if (item.category === 'singly') singlyNav.appendChild(btn);
+                else if (item.category === 'circular') circularNav.appendChild(btn);
+                else if (item.category === 'doubly') doublyNav.appendChild(btn);
+            });
+
+            renderPresentation();
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function drawFlowchartVector(canvasId, steps) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            let currentY = 30;
+            const nodeHeight = 40;
+            const nodeWidth = 200;
+            const centerX = width / 2;
+
+            steps.forEach((step, i) => {
+                ctx.save();
+                // Thiết kế bóng đổ nhẹ
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetY = 3;
+
+                // Chọn màu sắc cho từng kiểu hình dạng lưu đồ
+                let color = '#38bdf8'; // Sky blue mặc định
+                if (step.type === 'start' || step.type === 'end') color = '#10b981'; // Emerald
+                else if (step.type === 'decision') color = '#eab308'; // Amber
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.fillStyle = '#0f172a'; // Nền tối đặc trưng
+
+                if (step.type === 'start' || step.type === 'end') {
+                    // Vẽ hình con nhộng Oval cho Start/End
+                    const r = nodeHeight / 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX - nodeWidth/2 + r, currentY + r, r, Math.PI/2, Math.PI*1.5);
+                    ctx.lineTo(centerX + nodeWidth/2 - r, currentY);
+                    ctx.arc(centerX + nodeWidth/2 - r, currentY + r, r, Math.PI*1.5, Math.PI/2);
+                    ctx.lineTo(centerX - nodeWidth/2 + r, currentY + nodeHeight);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (step.type === 'decision') {
+                    // Vẽ hình thoi cho Decision
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, currentY);
+                    ctx.lineTo(centerX + nodeWidth/2, currentY + nodeHeight/2);
+                    ctx.lineTo(centerX, currentY + nodeHeight);
+                    ctx.lineTo(centerX - nodeWidth/2, currentY + nodeHeight/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    // Vẽ hình chữ nhật bo góc cho Process
+                    const r = 6;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - nodeWidth/2 + r, currentY);
+                    ctx.arcTo(centerX + nodeWidth/2, currentY, centerX + nodeWidth/2, currentY + nodeHeight, r);
+                    ctx.arcTo(centerX + nodeWidth/2, currentY + nodeHeight, centerX - nodeWidth/2, currentY + nodeHeight, r);
+                    ctx.arcTo(centerX - nodeWidth/2, currentY + nodeHeight, centerX - nodeWidth/2, currentY, r);
+                    ctx.arcTo(centerX - nodeWidth/2, currentY, centerX + nodeWidth/2, currentY, r);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // Vẽ text
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '11px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Cắt chữ nếu quá dài
+                let text = step.text;
+                if (text.length > 28) text = text.substring(0, 26) + "..";
+                ctx.fillText(text, centerX, currentY + nodeHeight/2);
+
+                // Vẽ mũi tên hướng đi tiếp theo
+                if (i < steps.length - 1) {
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, currentY + nodeHeight);
+                    ctx.lineTo(centerX, currentY + nodeHeight + 25);
+                    ctx.stroke();
+
+                    // Đầu mũi tên
+                    ctx.fillStyle = '#64748b';
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - 4, currentY + nodeHeight + 21);
+                    ctx.lineTo(centerX + 4, currentY + nodeHeight + 21);
+                    ctx.lineTo(centerX, currentY + nodeHeight + 25);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Vẽ ghi chú cho rẽ nhánh Yes/No nếu có
+                    if (step.branch) {
+                        ctx.fillStyle = '#eab308';
+                        ctx.font = 'bold 9px Inter, sans-serif';
+                        ctx.fillText(step.branch, centerX + 18, currentY + nodeHeight + 12);
+                    }
+                }
+
+                ctx.restore();
+                currentY += nodeHeight + 25;
+            });
+        }
+
+        function renderPresentation() {
+            const container = document.getElementById('presentation-container');
+            container.innerHTML = '';
+
+            database.forEach((item, idx) => {
+                const section = document.createElement('section');
+                section.id = item.id;
+                section.className = `bg-slate-950 rounded-2xl border border-slate-800 p-6 md:p-8 space-y-8 print-page-break transition hover:border-slate-700 relative`;
+                
+                // Đánh chỉ mục trang PDF tự động ở góc
+                section.innerHTML = `
+                    <div class="absolute top-4 right-4 text-xs font-semibold text-slate-600 no-print">Trang ${idx + 1} / 27</div>
+                    
+                    <!-- Tiêu đề trang -->
+                    <div class="border-b border-slate-800 pb-4">
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">CẨM NANG LIÊN KẾT</span>
+                        <h2 class="text-xl md:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-cube text-emerald-500"></i> ${item.title}
+                        </h2>
+                        <p class="text-sm text-slate-400 mt-1 italic"><i class="fa-solid fa-bullseye text-xs mr-1 text-slate-500"></i> Mục tiêu: ${item.objective}</p>
+                    </div>
+
+                    <!-- Layout chính: Chia hai cột (Flowchart & Code) -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                        <!-- Cột Flowchart (40% rộng) -->
+                        <div class="md:col-span-5 flex flex-col items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5 w-full">
+                                <i class="fa-solid fa-diagram-project text-sky-400"></i> SƠ ĐỒ THUẬT TOÁN (VECTOR FLOWCHART)
+                            </h3>
+                            <canvas id="canvas-${item.id}" width="280" height="380" class="bg-transparent rounded-lg"></canvas>
+                        </div>
+
+                        <!-- Cột Mã nguồn C chất lượng cao (70% rộng) -->
+                        <div class="md:col-span-7 flex flex-col space-y-3">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-code text-emerald-400"></i> MÃ NGUỒN ANSI C CHUẨN (HIGHTLIGHT)
+                            </h3>
+                            <div class="rounded-xl overflow-hidden border border-slate-800 bg-slate-900 p-4 relative">
+                                <span class="absolute top-2 right-2 text-[10px] code-font text-slate-600">ansi_c.c</span>
+                                <pre class="code-font text-xs text-slate-300 overflow-x-auto whitespace-pre leading-relaxed">${highlightCode(item.code)}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phần ghi nhớ và Flashcard thực chiến -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-800 pt-6">
+                        <!-- Mẹo và quy tắc 30s -->
+                        <div class="space-y-4">
+                            <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-800 flex flex-col space-y-2">
+                                <h4 class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wide">
+                                    <i class="fa-solid fa-lightbulb"></i> Quy luật ghi nhớ 30 giây
+                                </h4>
+                                <div class="text-sm font-semibold text-slate-200">${item.rules}</div>
+                                <div class="text-xs text-slate-500 mt-1 border-t border-slate-800 pt-2 font-mono whitespace-pre-line">${item.mindmap}</div>
+                            </div>
+
+                            <div class="bg-rose-950/20 p-4 rounded-xl border border-rose-900/30 flex flex-col space-y-2">
+                                <h4 class="text-xs font-bold text-rose-400 flex items-center gap-1.5 uppercase tracking-wide">
+                                    <i class="fa-solid fa-circle-exclamation"></i> LỖI THƯỜNG GẶP (CẢNH BÁO)
+                                </h4>
+                                <p class="text-xs text-rose-300 leading-relaxed">${item.mistake}</p>
+                            </div>
+                        </div>
+
+                        <!-- Flashcard lật mở tương tác -->
+                        <div class="flex flex-col justify-between space-y-4">
+                            <div class="bg-emerald-950/10 p-4 rounded-xl border border-emerald-900/20 flex flex-col space-y-2 h-full justify-between">
+                                <div>
+                                    <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wide mb-2">
+                                        <i class="fa-solid fa-circle-question"></i> FLASHCARD TỰ ÔN TẬP NHANH
+                                    </h4>
+                                    <p class="text-sm font-medium text-slate-200">Q: ${item.flashcard.q}</p>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-800/60 no-print">
+                                    <button onclick="toggleAnswer(this)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 transition text-[11px] font-bold text-slate-300 rounded border border-slate-700">Xem đáp án</button>
+                                    <p class="text-xs text-emerald-400 mt-2 font-semibold hidden answer-panel">${item.flashcard.a}</p>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-800/60 hidden print:block">
+                                    <p class="text-xs text-emerald-400 font-semibold">A: ${item.flashcard.a}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(section);
+
+                // Chạy vẽ vector flowchart bằng Canvas lập tức sau khi render DOM
+                setTimeout(() => {
+                    drawFlowchartVector(`canvas-${item.id}`, item.flowchart);
+                }, 50);
+            });
+        }
+
+        function highlightCode(code) {
+            return code
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                // Highlight comment
+                .replace(/(\/\/.*)/g, '<span class="text-slate-500 italic">$1</span>')
+                // Highlight keywords
+                .replace(/\b(typedef|struct|int|void|if|else|while|do|return|NULL|sizeof|free|malloc)\b/g, '<span class="text-emerald-400 font-bold">$1</span>')
+                // Highlight pointers
+                .replace(/(\w+\s*\*)/g, '<span class="text-sky-400">$1</span>')
+                // Highlight functions
+                .replace(/(\w+)(?=\()/g, '<span class="text-amber-400 font-semibold">$1</span>');
+        }
+
+        function toggleAnswer(btn) {
+            const panel = btn.nextElementSibling;
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                btn.innerText = 'Ẩn đáp án';
+            } else {
+                panel.classList.add('hidden');
+                btn.innerText = 'Xem đáp án';
+            }
+        }
+
+        function toggleViewMode() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content-area');
+            const btn = document.getElementById('viewModeBtn');
+
+            if (sidebar.classList.contains('no-print')) {
+                sidebar.classList.remove('no-print');
+                sidebar.classList.add('hidden');
+                mainContent.classList.remove('p-4', 'md:p-8');
+                mainContent.classList.add('p-0', 'bg-slate-950');
+                btn.innerHTML = `<i class="fa-solid fa-window-restore"></i> <span>Chế độ Tương Tác</span>`;
+            } else {
+                sidebar.classList.add('no-print');
+                sidebar.classList.remove('hidden');
+                mainContent.classList.add('p-4', 'md:p-8');
+                mainContent.classList.remove('p-0', 'bg-slate-950');
+                btn.innerHTML = `<i class="fa-solid fa-book-open"></i> <span>Chế độ Giáo Trình (In PDF)</span>`;
+            }
+        }
+
+        // Nạp dữ liệu ban đầu
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
